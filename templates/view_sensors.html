@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px; text-align: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 80%; max-width: 800px; margin: 0 auto;">
+        <h1>Manage Sensors</h1>
+        <a href="{{ url_for('add_sensor') }}" style="background-color: #007BFF; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Add Sensor</a>
+    </div>
+    <div style="background-color: #fff; padding: 20px; border-radius: 10px; display: inline-block; width: 80%; max-width: 800px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #007BFF; color: #fff;">
+                    <th style="padding: 10px; border: 1px solid #ccc;">Identifier</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sensor in sensors %}
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ccc;">{{ sensor.identifier }}</td>
+                    <td style="padding: 10px; border: 1px solid #ccc;">
+                        <a href="{{ url_for('edit_sensor', sensor_id=sensor.id) }}" style="background-color: #007BFF; color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none;">Edit</a>
+                        <form action="{{ url_for('delete_sensor', sensor_id=sensor.id) }}" method="post" style="display:inline;">
+                            <button type="submit" style="background-color: #FF0000; color: #fff; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

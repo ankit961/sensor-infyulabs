@@ -1,0 +1,108 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+
+
+<!-- Dropdown to select an area -->
+<label for="area-selector">Select Area:</label>
+<select id="area-selector">
+    {% for area in user.areas %}
+    <option value="{{ area.id }}">{{ area.name }}</option>
+    {% endfor %}
+</select>
+
+<div id="areas-container">
+    <!-- The content here will be dynamically populated based on the selected area -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Enable drag-and-drop for area cards
+    $("#areas-container").sortable();
+
+    let charts = {};  // Store existing charts
+
+    function updateCharts(areaId) {
+        fetch('/api/sensor_data_for_area/' + areaId)
+            .then(response => response.json())
+            .then(dataList => {
+                // Clear existing content
+                const container = document.getElementById('areas-container');
+                container.innerHTML = '';
+
+                dataList.forEach(data => {
+                    // Create elements dynamically
+                    const areaDiv = document.createElement('div');
+                    areaDiv.className = 'area-card';
+                    areaDiv.setAttribute('data-area-id', areaId);
+
+                    const sensorHeader = document.createElement('h4');
+                    sensorHeader.textContent = data.sensor_identifier;
+                    areaDiv.appendChild(sensorHeader);
+
+                    const canvas = document.createElement('canvas');
+                    canvas.id = `chart-${areaId}-${data.sensor_identifier}`;
+                    areaDiv.appendChild(canvas);
+
+                    container.appendChild(areaDiv);
+
+                    const ctx = canvas.getContext('2d');
+                    charts[canvas.id] = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.timestamps,
+                            datasets: [{
+                                label: `${data.sensor_identifier} Sensor Data`,
+                                data: data.values,
+                                borderColor: 'rgba(75, 192, 192, 1)',
+                                fill: false
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'day',
+                                        parser: 'YYYY-MM-DD HH:mm:ss'  // Format of the timestamp
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                });
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error.message);
+            });
+    }
+
+    // Listen to changes in the dropdown selection
+    document.getElementById('area-selector').addEventListener('change', function() {
+        const selectedAreaId = this.value;
+        updateCharts(selectedAreaId);
+    });
+
+    // Initial chart render for the first area
+    const initialAreaId = document.getElementById('area-selector').value;
+    updateCharts(initialAreaId);
+
+    // Update charts every 3 seconds
+    setInterval(() => {
+        const currentAreaId = document.getElementById('area-selector').value;
+        updateCharts(currentAreaId);
+    }, 3000);
+});
+</script>
+{% endblock %}

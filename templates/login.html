@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 50px;
+            text-align: center;
+        }
+        .login-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            width: 400px;
+        }
+        .login-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        .login-container input[type="text"], .login-container input[type="password"] {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-container button {
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .flash-message {
+            color: red;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <img src="{{ url_for('static', filename='images/logo_b.png') }}" alt="Infyu Labs Logo" style="width: 200px; margin-bottom: 20px;">
+        <h1>Sensor Dashboard</h1>
+        <p style="color: #666;">Securely access your account</p>
+    </div>
+     <!-- Flash message section -->
+     {% with messages = get_flashed_messages() %}
+     {% if messages %}
+       <div class="flash-message">
+         {% for message in messages %}
+           {{ message }}
+         {% endfor %}
+       </div>
+     {% endif %}
+   {% endwith %}
+    <form method="post" action="{{ url_for('login') }}" class="login-container">
+
+        <!-- Include the CSRF token -->
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username">
+        
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+        
+        <br>
+        
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>

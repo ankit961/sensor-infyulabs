@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Delete User</h2>
+
+<!-- Display user details or any other relevant information here -->
+
+<form method="post" action="{{ url_for('delete_user', user_id=user.id) }}" onsubmit="return confirmDelete('user')">
+    <input type="hidden" name="csrf_token" value="{{ form.csrf_token._value() }}">
+ <!-- This includes the CSRF token -->
+    <input type="submit" value="Delete User">
+</form>
+{% endblock %}

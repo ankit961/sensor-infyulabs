@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>User Profile</h2>
+    <p>Username: {{ user.username }}</p>
+    <div>
+        {% for area_name, sensors in areas_and_sensors.items() %}
+    <div>
+        <h5>Area: {{ area_name }}</h5>
+        <ul>
+            {% for sensor_identifier in sensors %}
+                <li>sensor: {{ sensor_identifier }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endfor %}
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Delete Sensor</h2>
+
+<!-- Display sensor details or any other relevant information here -->
+
+<form method="post" action="{{ url_for('delete_sensor', sensor_id=sensor.id) }}" onsubmit="return confirmDelete('sensor')">
+    {{ form.hidden_tag() }}  <!-- This includes the CSRF token -->
+    <input type="submit" value="Delete Sensor">
+</form>
+
+<script>
+    function confirmDelete(entity) {
+        return confirm('Are you sure you want to delete this ' + entity + '?');
+    }
+</script>
+{% endblock %}

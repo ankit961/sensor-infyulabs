@@ -1,0 +1,54 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+h2, h3, h4 {
+    color: #333;
+}
+
+.admin-controls {
+    background-color: #fff;
+    padding: 10px;
+    margin: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.admin-controls ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.admin-controls ul li {
+    margin-bottom: 10px;
+}
+
+.admin-controls ul li a {
+    text-decoration: none;
+    color: #007BFF;
+}
+
+.admin-controls ul li a:hover {
+    text-decoration: underline;
+}
+
+#areas-container {
+    width: 100%; /* Take up the full width of its parent */
+    max-width: 1200px; /* Set a maximum width if needed */
+    margin: 0 auto; /* Center the container if it's less than the maximum width */
+}
+
+.area-card {
+    width: 100%; /* Take up the full width of its container */
+    margin-bottom: 20px; /* Add some space between area cards */
+}
+
+canvas {
+    width: 100% !important; /* Ensure the canvas takes up the full width */
+    max-height: 400px; /* Set a maximum height for the canvas */
+    display: block; /* Block display mode to avoid inline gaps */
+}
+

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 50px; text-align: center;">
+    
+    <!-- Flexbox container for heading and button -->
+    <div style="display: flex; justify-content: space-between; align-items: center; width: 80%; max-width: 800px; margin: 0 auto;">
+        <h1>Manage Users</h1>
+        <a href="{{ url_for('add_user') }}" style="background-color: #007BFF; color: #fff; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Add User</a>
+    </div>
+    
+    <p style="color: #666;">Easily edit or delete user accounts</p>
+    <div style="background-color: #fff; padding: 20px; border-radius: 10px; display: inline-block; width: 80%; max-width: 800px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background-color: #007BFF; color: #fff;">
+                    <th style="padding: 10px; border: 1px solid #ccc;">Username</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Admin</th>
+                    <th style="padding: 10px; border: 1px solid #ccc;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ccc;">{{ user.username }}</td>
+                    <td style="padding: 10px; border: 1px solid #ccc;">{{ user.is_admin }}</td>
+                    <td style="padding: 10px; border: 1px solid #ccc;">
+                        <a href="{{ url_for('edit_user', user_id=user.id) }}" style="background-color: #007BFF; color: #fff; padding: 5px 10px; border-radius: 5px; text-decoration: none;">Edit</a>
+                        <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" style="display:inline;">
+                            <button type="submit" style="background-color: #FF0000; color: #fff; padding: 5px 10px; border-radius: 5px; border: none; cursor: pointer;">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

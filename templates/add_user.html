@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Add User</h2>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{ form.username.label(class="form-label") }}
+            {{ form.username(class="form-control", placeholder="Enter username") }}
+        </div>
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}
+            {{ form.password(class="form-control", placeholder="Enter password") }}
+        </div>
+        <div class="form-group">
+            {{ form.is_admin.label(class="form-label") }}
+            <br>
+            {{ form.is_admin(class="form-check-input") }}
+        </div>
+        <br>
+        <div class="form-group">
+            {{ form.areas.label(class="form-label") }}
+            {{ form.areas(class="form-control", multiple=true) }}
+            <small class="form-text text-muted">Hold down the Ctrl (or Cmd on Mac) key to select multiple areas.</small>
+        </div>
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

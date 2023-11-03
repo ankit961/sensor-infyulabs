@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Delete Area</h2>
+
+<!-- Display area details or any other relevant information here -->
+
+<form method="post" action="{{ url_for('delete_area', area_id=area.id) }}" onsubmit="return confirmDelete('area')">
+    {{ form.hidden_tag() }}  <!-- This includes the CSRF token -->
+    <input type="submit" value="Delete Area">
+</form>
+
+<script>
+    function confirmDelete(entity) {
+        return confirm('Are you sure you want to delete this ' + entity + '?');
+    }
+</script>
+{% endblock %}
