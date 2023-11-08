@@ -7,8 +7,9 @@ import model
 migrate = Migrate(app, db)
 alembic_config = Config("migrations/alembic.ini")
 
-alembic_config.set_main_option("sqlalchemy.url", "postgresql://infyulabs:infyulabs123@localhost:5432/sensors")
-
+# alembic_config.set_main_option("sqlalchemy.url", "postgresql://infyulabs:infyulabs123@localhost:5432/sensors")
+#Production
+alembic_config.set_main_option("sqlalchemy.url", "postgresql://infyulabs:infyulabs123@/sensors?host=/cloudsql/sensor-reading-404008:asia-south1:sensor")
 
 @app.cli.command("db_init")
 def db_init():
