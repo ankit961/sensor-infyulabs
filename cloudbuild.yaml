@@ -1,16 +1,27 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 steps:
-  # Run database migrations
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'bash'
+  # Start the Cloud SQL Proxy
+  - id: 'Start Cloud SQL Proxy'
+    name: 'gcr.io/cloudsql-docker/gce-proxy'
+    entrypoint: '/bin/sh'
     args:
       - '-c'
       - |
-        echo "Running database migrations"
-        gcloud sql connect sensor-reading-404008:asia-south1:sensor --quiet --command="python manage.py db upgrade"
-  
+        ./cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 &
+        sleep 5
+
+  # Run database migrations
+  - id: 'Run Migrations'
+    name: 'python:3.9'
+    entrypoint: '/bin/sh'
+    args:
+      - '-c'
+      - |
+        python manage.py db upgrade
+
   # Deploy the app
-  - name: 'gcr.io/cloud-builders/gcloud'
+  - id: 'Deploy App'
+    name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy']
 timeout: '1600s'
