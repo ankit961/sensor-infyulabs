@@ -3,7 +3,7 @@
 ./cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC &
 
 # Wait a few seconds to ensure the SQL Proxy has started
-sleep 10
+sleep 20
 
 # Run the migrations
 python manage.py db init
