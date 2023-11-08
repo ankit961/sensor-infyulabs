@@ -1,7 +1,16 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 steps:
-- name: 'gcr.io/cloud-builders/gcloud'
-  args: ['app', 'deploy']
-
+  # Run database migrations
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        echo "Running database migrations"
+        gcloud sql connect sensor-reading-404008:asia-south1:sensor --quiet --command="python manage.py db upgrade"
+  
+  # Deploy the app
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args: ['app', 'deploy']
 timeout: '1600s'
