@@ -12,24 +12,24 @@ steps:
     args: ['+x', 'cloud_sql_proxy']
     id: 'Make Proxy Executable'
     
-# Install Python dependencies
-  - id: 'Install Dependencies'
-    name: 'python:3.9'
-    entrypoint: 'pip'
-    args: ['install', '-r', 'requirements.txt']
-
-  # Run migrations using the official Python image
-  - id: 'Run Migrations'
+# Install dependencies and run migrations in the same step
+  - id: 'Setup and Migrate'
     name: 'python:3.9'
     entrypoint: 'bash'
-    args: ['./run_migrations.sh']
-    env: ['CLOUDSQL_INSTANCE=sensor-reading-404008:asia-south1:sensor']
-    waitFor: ['Install Dependencies']
+    args:
+      - '-c'
+      - |
+        pip install -r requirements.txt
+        python manage.py db init
+        python manage.py db migrate
+        python manage.py db upgrade
 
   # Deploy the app
   - id: 'Deploy App'
     name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy']
-    waitFor: ['Run Migrations']
+    waitFor: ['Setup and Migrate']
+
+timeout: '1600s'
 
 timeout: '1600s'
