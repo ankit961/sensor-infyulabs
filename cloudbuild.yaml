@@ -11,7 +11,13 @@ steps:
     entrypoint: 'chmod'
     args: ['+x', 'cloud_sql_proxy']
     id: 'Make Proxy Executable'
-
+    
+    # Install Python dependencies
+  - id: 'Install Dependencies'
+    name: 'python:3.9'
+    entrypoint: 'pip'
+    args: ['install', '-r', 'requirements.txt']
+    # Make sure this step runs before the 'Run Mig
 # Run migrations using the official Python image
   - id: 'Run Migrations'
     name: 'python:3.9'  # Use the official Python image
