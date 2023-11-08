@@ -1,5 +1,7 @@
 options:
   logging: CLOUD_LOGGING_ONLY
+options:
+  logging: CLOUD_LOGGING_ONLY
 steps:
   # Install Python dependencies and start the Cloud SQL Proxy
   # Install Python dependencies and start the Cloud SQL Proxy
@@ -21,13 +23,18 @@ steps:
         done
         echo "Cloud SQL Proxy is ready."
         
-  # Run migrations
-  - id: 'Setup and Migrate'
+ - id: 'Setup and Migrate'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: 'sh'
+    entrypoint: 'bash'
     args:
       - '-c'
-      - 'python manage.py db upgrade'
+      - |
+        python3 -m venv venv &&
+        . venv/bin/activate &&
+        pip install -r requirements.txt &&
+        python3 manage.py db init &&
+        python3 manage.py db migrate &&
+        python3 manage.py db upgrade
     waitFor: ['Install Dependencies and Start Proxy']
 
   # Deploy the app
