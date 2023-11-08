@@ -1,3 +1,5 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
 steps:
   # Install Python dependencies and start the Cloud SQL Proxy
   - id: 'Install Dependencies and Start Proxy'
