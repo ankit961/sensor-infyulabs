@@ -3,27 +3,26 @@ options:
 steps:
   # Start the Cloud SQL Proxy using TCP in the background
   - name: 'gcr.io/cloudsql-docker/gce-proxy'
-    args: ['/cloud_sql_proxy',
-           '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432',
-           '-ip_address_types=PUBLIC']
-    # This is critical: we use 'sh -c' to wrap the cloud_sql_proxy command
-    # and run it in the background with '&'.
-    entrypoint: 'sh'
-    args: ['-c', '/cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC & sleep 10']
+    args:
+      - '/cloud_sql_proxy'
+      - '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432'
+      - '-ip_address_types=PUBLIC'
+    # Run the proxy in the background to allow the build to proceed
+    waitFor: ['-']
 
   # Run database migrations
   - name: 'python:3.9'
-    entrypoint: 'sh'
+    entrypoint: 'python'
     args:
-      - '-c'
-      - |
-        # Wait for Cloud SQL Proxy to be ready
-        sleep 10
-        # Run the migration
-        python manage.py db upgrade
+      - 'manage.py'
+      - 'db'
+      - 'upgrade'
+    # Ensure this step waits until the Cloud SQL Proxy is ready
+    waitFor: ['Start Cloud SQL Proxy']
 
   # Deploy the app
   - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy']
+    waitFor: ['Run Migrations']
 
 timeout: '1600s'
