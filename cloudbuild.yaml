@@ -1,28 +1,28 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 steps:
-  # Start the Cloud SQL Proxy using TCP in the background
-  - id: 'Start Cloud SQL Proxy'
-    name: 'gcr.io/cloudsql-docker/gce-proxy'
-    args:
-      - '/cloud_sql_proxy'
-      - '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432'
-      - '-ip_address_types=PUBLIC'
-    # Run the proxy as a daemon process
-    entrypoint: 'sh'
-    args: ['-c', '(/cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC &) && sleep 5']
+  # Get the Cloud SQL Proxy
+  - name: 'gcr.io/cloud-builders/wget'
+    args: ['https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64', '-O', 'cloud_sql_proxy']
+    id: 'Download Cloud SQL Proxy'
 
-  # Run database migrations
-  - id: 'Run Migrations'
-    name: 'python:3.9'
-    entrypoint: 'sh'
-    args:
-      - '-c'
-      - 'sleep 5 && python manage.py db upgrade'
+  # Make the proxy executable
+  - name: 'ubuntu'
+    entrypoint: 'chmod'
+    args: ['+x', 'cloud_sql_proxy']
+    id: 'Make Proxy Executable'
+
+  # Run migrations using the custom script
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args: ['./run_migrations.sh']
+    env: ['CLOUDSQL_INSTANCE=sensor-reading-404008:asia-south1:sensor']
+    id: 'Run Migrations'
 
   # Deploy the app
-  - id: 'Deploy App'
-    name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gcloud'
     args: ['app', 'deploy']
+    id: 'Deploy App'
+    waitFor: ['Run Migrations']
 
 timeout: '1600s'
