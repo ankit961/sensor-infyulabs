@@ -12,19 +12,20 @@ steps:
     args: ['+x', 'cloud_sql_proxy']
     id: 'Make Proxy Executable'
     
-- id: 'Install Dependencies and Start Proxy'
+  # Install Python dependencies and start the Cloud SQL Proxy
+  - id: 'Install Dependencies and Start Proxy'
     name: 'python:3.9'
     entrypoint: 'sh'
     args:
       - '-c'
       - |
         pip install -r requirements.txt &&
-        apt-get update && apt-get install -y netcat &&  # Install netcat
+        apt-get update && apt-get install -y netcat && 
         wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy &&
         chmod +x cloud_sql_proxy &&
         ./cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC &
         # Wait for the proxy to be ready
-        while ! nc -z localhost 5432; do
+        while ! nc -z localhost 5432; do   
           echo "Waiting for Cloud SQL Proxy to be ready..."
           sleep 1
         done
