@@ -2,7 +2,6 @@ options:
   logging: CLOUD_LOGGING_ONLY
 steps:
   # Install Python dependencies and start the Cloud SQL Proxy
-  # Install Python dependencies and start the Cloud SQL Proxy
   - id: 'Install Dependencies and Start Proxy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
@@ -21,7 +20,7 @@ steps:
         done
         echo "Cloud SQL Proxy is ready."
         
- - id: 'Setup and Migration'
+  - id: 'Setup and Migration'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
