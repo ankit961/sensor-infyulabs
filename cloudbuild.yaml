@@ -1,21 +1,26 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 steps:
-  # Start the Cloud SQL Proxy using TCP
+  # Start the Cloud SQL Proxy using TCP in the background
   - name: 'gcr.io/cloudsql-docker/gce-proxy'
     args: ['/cloud_sql_proxy',
            '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432',
            '-ip_address_types=PUBLIC']
-    # Make sure to run this in the background if subsequent steps depend on the proxy
+    # This is critical: we use 'sh -c' to wrap the cloud_sql_proxy command
+    # and run it in the background with '&'.
+    entrypoint: 'sh'
+    args: ['-c', '/cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC & sleep 10']
 
-  # Run database migrations (example using Flask-Migrate)
+  # Run database migrations
   - name: 'python:3.9'
-    entrypoint: 'bash'
+    entrypoint: 'sh'
     args:
       - '-c'
       - |
-        sleep 10  # Give the proxy time to start
-        python manage.py db upgrade  # Replace with your actual migration command
+        # Wait for Cloud SQL Proxy to be ready
+        sleep 10
+        # Run the migration
+        python manage.py db upgrade
 
   # Deploy the app
   - name: 'gcr.io/cloud-builders/gcloud'
