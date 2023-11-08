@@ -20,7 +20,7 @@ steps:
         done
         echo "Cloud SQL Proxy is ready."
         
-  - id: 'Setup and Migration'
+  - id: 'Setup and Migrate'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'bash'
     args:
