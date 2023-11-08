@@ -2,6 +2,7 @@ options:
   logging: CLOUD_LOGGING_ONLY
 steps:
   # Install Python dependencies and start the Cloud SQL Proxy
+  # Install Python dependencies and start the Cloud SQL Proxy
   - id: 'Install Dependencies and Start Proxy'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'sh'
@@ -10,7 +11,7 @@ steps:
       - |
         apt-get update && apt-get install -y netcat &&  # Install netcat
         pip install -r requirements.txt &&
-        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy &&
+        curl -o cloud_sql_proxy https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 &&
         chmod +x cloud_sql_proxy &&
         ./cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC &
         # Wait for the proxy to be ready
@@ -19,7 +20,7 @@ steps:
           sleep 1
         done
         echo "Cloud SQL Proxy is ready."
-
+        
   # Run migrations
   - id: 'Setup and Migrate'
     name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
