@@ -4,6 +4,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') 
+    SECRET_KEY = "8f7c95ef3e6507753ea648c4659c36f1"
+    SQLALCHEMY_DATABASE_URI = "postgresql://infyulabs:infyulabs123@/sensors?host=/cloudsql/sensor-reading-404008:asia-south1:sensor"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
