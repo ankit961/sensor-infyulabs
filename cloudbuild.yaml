@@ -12,22 +12,23 @@ steps:
     args: ['+x', 'cloud_sql_proxy']
     id: 'Make Proxy Executable'
     
-  # Install Python dependencies
-  - id: 'Install Dependencies'
+  # Install Python dependencies and start the Cloud SQL Proxy
+  - id: 'Install Dependencies and Start Proxy'
     name: 'python:3.9'
     entrypoint: 'sh'
     args:
       - '-c'
-      - 'pip install -r requirements.txt'
-
-  # Start Cloud SQL Proxy
-  - id: 'Start Cloud SQL Proxy'
-    name: 'gcr.io/cloudsql-docker/gce-proxy'
-    args:
-      - '-c'
-      - '/cloud_sql_proxy'
-      - '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432'
-    waitFor: ['Install Dependencies']
+      - |
+        pip install -r requirements.txt &&
+        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy &&
+        chmod +x cloud_sql_proxy &&
+        ./cloud_sql_proxy -instances=sensor-reading-404008:asia-south1:sensor=tcp:5432 -ip_address_types=PUBLIC &
+        # Wait for the proxy to be ready
+        while ! nc -z localhost 5432; do   
+          echo "Waiting for Cloud SQL Proxy to be ready..."
+          sleep 1
+        done
+        echo "Cloud SQL Proxy is ready."
 
   # Run migrations
   - id: 'Setup and Migrate'
@@ -35,16 +36,8 @@ steps:
     entrypoint: 'sh'
     args:
       - '-c'
-      - |
-        while ! nc -z localhost 5432; do   
-          echo "Waiting for Cloud SQL Proxy to be ready..."
-          sleep 1
-        done
-        echo "Cloud SQL Proxy is ready."
-        python manage.py db init
-        python manage.py db migrate
-        python manage.py db upgrade
-    waitFor: ['Start Cloud SQL Proxy']
+      - 'python manage.py db upgrade'
+    waitFor: ['Install Dependencies and Start Proxy']
 
   # Deploy the app
   - id: 'Deploy App'
