@@ -24,6 +24,7 @@ steps:
   - id: 'Start Cloud SQL Proxy'
     name: 'gcr.io/cloudsql-docker/gce-proxy'
     args:
+      - '-c'
       - '/cloud_sql_proxy'
       - '-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432'
     waitFor: ['Install Dependencies']
@@ -40,6 +41,8 @@ steps:
           sleep 1
         done
         echo "Cloud SQL Proxy is ready."
+        python manage.py db init
+        python manage.py db migrate
         python manage.py db upgrade
     waitFor: ['Start Cloud SQL Proxy']
 
