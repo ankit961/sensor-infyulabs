@@ -3,11 +3,13 @@ from app import app, db
 from flask.cli import FlaskGroup
 from alembic.config import Config
 import model
-
+import os
+from dotenv import load_dotenv
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI', 'sqlite:///default.db')
 migrate = Migrate(app, db)
 alembic_config = Config("migrations/alembic.ini")
 
-alembic_config.set_main_option("sqlalchemy.url", "postgresql://infyulabs:infyulabs123@localhost:5432/sensors")
+alembic_config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URI)
 # #Production
 # alembic_config.set_main_option("sqlalchemy.url", "postgresql://infyulabs:infyulabs123@/sensors?host=/cloud_sql_proxy-instances=sensor-reading-404008:asia-south1:sensor=tcp:5432")
 
